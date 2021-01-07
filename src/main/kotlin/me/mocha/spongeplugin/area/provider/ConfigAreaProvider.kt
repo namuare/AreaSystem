@@ -1,17 +1,13 @@
-package me.mocha.spongeplugin.area
+package me.mocha.spongeplugin.area.provider
 
 import com.google.common.reflect.TypeToken
+import me.mocha.spongeplugin.area.AreaSystem
 import me.mocha.spongeplugin.area.util.AreaInfo
 import me.mocha.spongeplugin.area.util.Vector3
 
-interface AreaService {
-    fun createArea(id: String, world: String, start: Vector3, end: Vector3)
-    fun save()
-}
+object ConfigAreaProvider : AreaProvider {
 
-object SimpleAreaService : AreaService {
-
-    private val config = AreaSystem.instance.config
+    private val config = AreaSystem.getInstance().config
     private val configRoot = config.load()
 
     override fun createArea(id: String, world: String, start: Vector3, end: Vector3) {
@@ -19,8 +15,12 @@ object SimpleAreaService : AreaService {
         save()
     }
 
-    override fun save() {
+    private fun save() {
         config.save(configRoot)
+    }
+
+    override fun close() {
+        this.save()
     }
 
 }

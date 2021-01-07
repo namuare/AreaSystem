@@ -2,6 +2,8 @@ package me.mocha.spongeplugin.area
 
 import com.google.common.reflect.TypeToken
 import com.google.inject.Inject
+import me.mocha.spongeplugin.area.provider.AreaProvider
+import me.mocha.spongeplugin.area.provider.ConfigAreaProvider
 import me.mocha.spongeplugin.area.util.AreaInfo
 import me.mocha.spongeplugin.area.util.AreaSerializer
 import ninja.leaping.configurate.commented.CommentedConfigurationNode
@@ -16,7 +18,6 @@ import org.spongepowered.api.event.game.state.GamePostInitializationEvent
 import org.spongepowered.api.event.game.state.GameStoppedServerEvent
 import org.spongepowered.api.plugin.Dependency
 import org.spongepowered.api.plugin.Plugin
-
 
 @Plugin(
     id = "areasystem",
@@ -35,7 +36,8 @@ class AreaSystem {
     lateinit var config: ConfigurationLoader<CommentedConfigurationNode>
 
     companion object {
-        lateinit var instance: AreaSystem
+        private lateinit var instance: AreaSystem
+        fun getInstance() = instance
     }
 
     init {
@@ -51,12 +53,12 @@ class AreaSystem {
 
     @Listener
     fun onPostInit(event: GamePostInitializationEvent) {
-        Sponge.getServiceManager().setProvider(this, AreaService::class.java, SimpleAreaService)
+        Sponge.getServiceManager().setProvider(this, AreaProvider::class.java, ConfigAreaProvider)
     }
 
     @Listener
     fun onGameStopped(event: GameStoppedServerEvent) {
-        SimpleAreaService.save()
+        ConfigAreaProvider.close()
     }
 
 }
