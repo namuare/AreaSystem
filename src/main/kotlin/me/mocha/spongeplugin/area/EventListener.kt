@@ -9,7 +9,7 @@ const val contractId = "item.contract.landcontract"
 
 object EventListener {
 
-    private val logger = AreaSystem.getInstance().logger
+    private val logger = AreaSystem.instance.logger
 
     @Listener
     fun onInteract(event: InteractItemEvent, @Root player: Player) {

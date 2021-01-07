@@ -1,18 +1,22 @@
 package me.mocha.spongeplugin.area
 
+import com.google.common.reflect.TypeToken
 import com.google.inject.Inject
+import me.mocha.spongeplugin.area.util.AreaInfo
+import me.mocha.spongeplugin.area.util.AreaSerializer
 import ninja.leaping.configurate.commented.CommentedConfigurationNode
 import ninja.leaping.configurate.loader.ConfigurationLoader
+import ninja.leaping.configurate.objectmapping.serialize.TypeSerializerCollection
 import org.slf4j.Logger
 import org.spongepowered.api.Sponge
-import org.spongepowered.api.config.ConfigDir
 import org.spongepowered.api.config.DefaultConfig
 import org.spongepowered.api.event.Listener
 import org.spongepowered.api.event.game.state.GameInitializationEvent
+import org.spongepowered.api.event.game.state.GamePostInitializationEvent
+import org.spongepowered.api.event.game.state.GameStoppedServerEvent
 import org.spongepowered.api.plugin.Dependency
 import org.spongepowered.api.plugin.Plugin
 
-private lateinit var instance: AreaSystem
 
 @Plugin(
     id = "areasystem",
@@ -26,14 +30,33 @@ class AreaSystem {
     @Inject
     lateinit var logger: Logger
 
+    @Inject
+    @DefaultConfig(sharedRoot = true)
+    lateinit var config: ConfigurationLoader<CommentedConfigurationNode>
+
     companion object {
-        fun getInstance() = instance
+        lateinit var instance: AreaSystem
+    }
+
+    init {
+        instance = this
     }
 
     @Listener
-    fun onPreInit(event: GameInitializationEvent) {
+    fun onInit(event: GameInitializationEvent) {
         instance = this
+        TypeSerializerCollection.defaults().register(TypeToken.of(AreaInfo::class.java), AreaSerializer)
         Sponge.getEventManager().registerListeners(this, EventListener)
+    }
+
+    @Listener
+    fun onPostInit(event: GamePostInitializationEvent) {
+        Sponge.getServiceManager().setProvider(this, AreaService::class.java, SimpleAreaService)
+    }
+
+    @Listener
+    fun onGameStopped(event: GameStoppedServerEvent) {
+        SimpleAreaService.save()
     }
 
 }
