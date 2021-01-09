@@ -2,6 +2,7 @@ package me.mocha.spongeplugin.area
 
 import com.google.common.reflect.TypeToken
 import com.google.inject.Inject
+import me.mocha.spongeplugin.area.command.CreateAreaCommand
 import me.mocha.spongeplugin.area.provider.AreaProvider
 import me.mocha.spongeplugin.area.provider.ConfigAreaProvider
 import me.mocha.spongeplugin.area.util.AreaInfo
@@ -15,6 +16,7 @@ import org.spongepowered.api.config.DefaultConfig
 import org.spongepowered.api.event.Listener
 import org.spongepowered.api.event.game.state.GameInitializationEvent
 import org.spongepowered.api.event.game.state.GamePostInitializationEvent
+import org.spongepowered.api.event.game.state.GamePreInitializationEvent
 import org.spongepowered.api.event.game.state.GameStoppedServerEvent
 import org.spongepowered.api.plugin.Dependency
 import org.spongepowered.api.plugin.Plugin
@@ -24,7 +26,10 @@ import org.spongepowered.api.plugin.Plugin
     name = "AreaSystem",
     version = "1.0-SNAPSHOT",
     description = "area system for sponge api",
-    dependencies = [Dependency(id = "kponge", optional = false, version = "1.0")]
+    dependencies = [
+        Dependency(id = "kponge", version = "1.3.72"),
+        Dependency(id = "worldedit", optional = false, version = "6.1.10")
+    ]
 )
 class AreaSystem {
 
@@ -45,10 +50,14 @@ class AreaSystem {
     }
 
     @Listener
-    fun onInit(event: GameInitializationEvent) {
-        instance = this
+    fun onPreInit(event: GamePreInitializationEvent) {
         TypeSerializerCollection.defaults().register(TypeToken.of(AreaInfo::class.java), AreaSerializer)
+    }
+
+    @Listener
+    fun onInit(event: GameInitializationEvent) {
         Sponge.getEventManager().registerListeners(this, EventListener)
+        Sponge.getCommandManager().register(this, CreateAreaCommand.spec, "createarea")
     }
 
     @Listener
