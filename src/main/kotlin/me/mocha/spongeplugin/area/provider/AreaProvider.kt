@@ -5,5 +5,6 @@ import me.mocha.spongeplugin.area.util.Vector3
 
 interface AreaProvider {
     fun createArea(id: String, world: String, start: Vector3, end: Vector3): AreaInfo
+    fun getAll(): List<AreaInfo>
     fun close()
 }

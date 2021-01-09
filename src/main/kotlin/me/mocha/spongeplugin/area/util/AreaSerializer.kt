@@ -1,6 +1,7 @@
 package me.mocha.spongeplugin.area.util
 
 import com.google.common.reflect.TypeToken
+import me.mocha.spongeplugin.area.AreaSystem
 import ninja.leaping.configurate.ConfigurationNode
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer
 
@@ -8,6 +9,9 @@ object AreaSerializer : TypeSerializer<AreaInfo> {
 
     override fun deserialize(type: TypeToken<*>, value: ConfigurationNode): AreaInfo {
         val id = value.key.toString()
+
+        AreaSystem.getInstance().logger.info(id)
+
         val world = value.getNode("world").string!!
         var start: Vector3
         var end: Vector3

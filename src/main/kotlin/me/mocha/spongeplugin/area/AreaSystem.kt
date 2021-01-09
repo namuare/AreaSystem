@@ -2,9 +2,9 @@ package me.mocha.spongeplugin.area
 
 import com.google.common.reflect.TypeToken
 import com.google.inject.Inject
+import me.mocha.spongeplugin.area.command.AreaListCommand
 import me.mocha.spongeplugin.area.command.CreateAreaCommand
-import me.mocha.spongeplugin.area.provider.AreaProvider
-import me.mocha.spongeplugin.area.provider.ConfigAreaProvider
+import me.mocha.spongeplugin.area.service.AreaService
 import me.mocha.spongeplugin.area.util.AreaInfo
 import me.mocha.spongeplugin.area.util.AreaSerializer
 import ninja.leaping.configurate.commented.CommentedConfigurationNode
@@ -58,16 +58,17 @@ class AreaSystem {
     fun onInit(event: GameInitializationEvent) {
         Sponge.getEventManager().registerListeners(this, EventListener)
         Sponge.getCommandManager().register(this, CreateAreaCommand.spec, "createarea")
+        Sponge.getCommandManager().register(this, AreaListCommand.spec, "arealist")
     }
 
     @Listener
     fun onPostInit(event: GamePostInitializationEvent) {
-        Sponge.getServiceManager().setProvider(this, AreaProvider::class.java, ConfigAreaProvider)
+        Sponge.getServiceManager().setProvider(this, AreaService::class.java, AreaService)
     }
 
     @Listener
     fun onGameStopped(event: GameStoppedServerEvent) {
-        ConfigAreaProvider.close()
+        AreaService.close()
     }
 
 }
