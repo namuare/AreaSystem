@@ -3,6 +3,7 @@ package me.mocha.spongeplugin.area.service
 import com.sk89q.worldedit.IncompleteRegionException
 import com.sk89q.worldedit.regions.CuboidRegion
 import com.sk89q.worldedit.sponge.SpongeWorldEdit
+import me.mocha.spongeplugin.area.exception.AreaOverlapException
 import me.mocha.spongeplugin.area.provider.AreaProvider
 import me.mocha.spongeplugin.area.provider.ConfigAreaProvider
 import me.mocha.spongeplugin.area.util.AreaInfo
@@ -20,11 +21,14 @@ object AreaService {
         val sel = session.getSelection(world)
 
         if (sel is CuboidRegion) {
-
             val min = sel.minimumPoint
             val max = sel.maximumPoint
             val start = Vector3(min.blockX, min.blockY, min.blockZ)
             val end = Vector3(max.blockX, max.blockY, max.blockZ)
+
+            if (checkOverlap(world.name, start, end)) {
+                throw AreaOverlapException()
+            }
 
             return createArea(id, world.name, start, end)
         } else throw IncompleteRegionException()
@@ -36,6 +40,16 @@ object AreaService {
 
     fun getAll(): List<AreaInfo> {
         return provider.getAll()
+    }
+
+    fun checkOverlap(world: String, start: Vector3, end: Vector3): Boolean {
+        return getAll().any {
+            it.world == world && (
+                    ((start.x >= it.start.x && start.x <= it.end.x) || (end.x >= it.start.x && end.x <= it.end.x)) &&
+                            ((start.z >= it.start.z && start.z <= it.end.z) || (end.z >= it.start.z && end.z <= it.end.z)) &&
+                            ((start.y >= it.start.y && start.y <= it.end.y) || (end.y >= it.start.y && end.y <= it.end.y))
+                    )
+        }
     }
 
     fun close() {
