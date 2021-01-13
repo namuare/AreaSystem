@@ -26,8 +26,9 @@ object AreaService {
             val start = Vector3(min.blockX, min.blockY, min.blockZ)
             val end = Vector3(max.blockX, max.blockY, max.blockZ)
 
-            if (checkOverlap(world.name, start, end)) {
-                throw AreaOverlapException()
+            val overlaps = getOverlaps(world.name, start, end)
+            if (overlaps.isNotEmpty()) {
+                throw AreaOverlapException(overlaps)
             }
 
             return createArea(id, world.name, start, end)
@@ -42,8 +43,8 @@ object AreaService {
         return provider.getAll()
     }
 
-    fun checkOverlap(world: String, start: Vector3, end: Vector3): Boolean {
-        return getAll().any {
+    fun getOverlaps(world: String, start: Vector3, end: Vector3): List<AreaInfo> {
+        return getAll().filter {
             it.world == world && (
                     ((start.x >= it.start.x && start.x <= it.end.x) || (end.x >= it.start.x && end.x <= it.end.x)) &&
                             ((start.z >= it.start.z && start.z <= it.end.z) || (end.z >= it.start.z && end.z <= it.end.z)) &&
