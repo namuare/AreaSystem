@@ -36,7 +36,11 @@ object AreaService {
     }
 
     fun createArea(id: String, world: String, start: Vector3, end: Vector3): AreaInfo {
-        return provider.createArea(id, world, start, end)
+        return provider.create(id, world, start, end)
+    }
+
+    fun getAreaById(id: String): AreaInfo? {
+        return provider.getById(id)
     }
 
     fun getAll(): List<AreaInfo> {

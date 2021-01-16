@@ -4,8 +4,7 @@ import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.event.Listener
 import org.spongepowered.api.event.filter.cause.Root
 import org.spongepowered.api.event.item.inventory.InteractItemEvent
-
-const val contractId = "item.contract.landcontract"
+import org.spongepowered.api.event.block.ChangeBlockEvent
 
 object EventListener {
 
@@ -13,6 +12,10 @@ object EventListener {
 
     @Listener
     fun onInteract(event: InteractItemEvent, @Root player: Player) {
+    }
+
+    @Listener
+    fun onBreak(event: ChangeBlockEvent) {
     }
 
 }
