@@ -39,6 +39,15 @@ object AreaService {
         return provider.create(id, world, start, end)
     }
 
+    fun getAreaByPosition(world: String, pos: Vector3): AreaInfo {
+        return getAll().first {
+            it.world == world &&
+                    ((pos.x >= it.start.x && pos.x <= it.end.x) &&
+                            (pos.z >= it.start.z && pos.z <= it.end.z) &&
+                            (pos.y >= it.start.y && pos.y <= it.end.y))
+        }
+    }
+
     fun getAreaById(id: String): AreaInfo? {
         return provider.getById(id)
     }
