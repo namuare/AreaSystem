@@ -1,13 +1,15 @@
-package me.mocha.spongeplugin.area.util
+package me.mocha.spongeplugin.area.model.serializer
 
 import com.google.common.reflect.TypeToken
 import me.mocha.spongeplugin.area.AreaSystem
+import me.mocha.spongeplugin.area.model.entity.Area
+import me.mocha.spongeplugin.area.util.Vector3
 import ninja.leaping.configurate.ConfigurationNode
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer
 
-object AreaSerializer : TypeSerializer<AreaInfo> {
+object AreaSerializer : TypeSerializer<Area> {
 
-    override fun deserialize(type: TypeToken<*>, value: ConfigurationNode): AreaInfo {
+    override fun deserialize(type: TypeToken<*>, value: ConfigurationNode): Area {
         val id = value.key.toString()
 
         AreaSystem.getInstance().logger.info(id)
@@ -23,10 +25,10 @@ object AreaSerializer : TypeSerializer<AreaInfo> {
             end = Vector3(getNode("x").int, getNode("y").int, getNode("z").int)
         }
 
-        return AreaInfo(id, world, start, end)
+        return Area(id, world, start, end)
     }
 
-    override fun serialize(type: TypeToken<*>, area: AreaInfo?, value: ConfigurationNode) {
+    override fun serialize(type: TypeToken<*>, area: Area?, value: ConfigurationNode) {
         area!!
         value.getNode("world").value = area.world
 

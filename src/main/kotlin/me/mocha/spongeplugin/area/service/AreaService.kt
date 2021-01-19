@@ -1,20 +1,22 @@
 package me.mocha.spongeplugin.area.service
 
+import com.flowpowered.math.vector.Vector3d
 import com.sk89q.worldedit.IncompleteRegionException
 import com.sk89q.worldedit.regions.CuboidRegion
 import com.sk89q.worldedit.sponge.SpongeWorldEdit
 import me.mocha.spongeplugin.area.exception.AreaOverlapException
-import me.mocha.spongeplugin.area.provider.AreaProvider
-import me.mocha.spongeplugin.area.provider.ConfigAreaProvider
-import me.mocha.spongeplugin.area.util.AreaInfo
+import me.mocha.spongeplugin.area.model.provider.AreaProvider
+import me.mocha.spongeplugin.area.model.provider.ConfigAreaProvider
+import me.mocha.spongeplugin.area.model.entity.Area
 import me.mocha.spongeplugin.area.util.Vector3
 import org.spongepowered.api.entity.living.player.Player
+import org.spongepowered.api.world.World
 
 object AreaService {
     private val provider: AreaProvider = ConfigAreaProvider()
 
     @Throws(IncompleteRegionException::class)
-    fun createArea(player: Player, id: String): AreaInfo {
+    fun createArea(player: Player, id: String): Area {
         val session = SpongeWorldEdit.inst().getSession(player)
 
         val world = session.selectionWorld
@@ -35,11 +37,19 @@ object AreaService {
         } else throw IncompleteRegionException()
     }
 
-    fun createArea(id: String, world: String, start: Vector3, end: Vector3): AreaInfo {
+    fun createArea(id: String, world: String, start: Vector3, end: Vector3): Area {
         return provider.create(id, world, start, end)
     }
 
-    fun getAreaByPosition(world: String, pos: Vector3): AreaInfo {
+    fun getAreaByPlayer(player: Player): Area {
+        return getAreaByPosition(player.world, player.position)
+    }
+
+    fun getAreaByPosition(world: World, pos: Vector3d): Area {
+        return getAreaByPosition(world.name, Vector3(pos.floorX, pos.floorY, pos.floorZ))
+    }
+
+    fun getAreaByPosition(world: String, pos: Vector3): Area {
         return getAll().first {
             it.world == world &&
                     ((pos.x >= it.start.x && pos.x <= it.end.x) &&
@@ -48,15 +58,15 @@ object AreaService {
         }
     }
 
-    fun getAreaById(id: String): AreaInfo? {
+    fun getAreaById(id: String): Area? {
         return provider.getById(id)
     }
 
-    fun getAll(): List<AreaInfo> {
+    fun getAll(): List<Area> {
         return provider.getAll()
     }
 
-    fun getOverlaps(world: String, start: Vector3, end: Vector3): List<AreaInfo> {
+    fun getOverlaps(world: String, start: Vector3, end: Vector3): List<Area> {
         return getAll().filter {
             it.world == world && (
                     ((start.x >= it.start.x && start.x <= it.end.x) || (end.x >= it.start.x && end.x <= it.end.x)) &&

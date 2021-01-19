@@ -5,8 +5,8 @@ import com.google.inject.Inject
 import me.mocha.spongeplugin.area.command.AreaListCommand
 import me.mocha.spongeplugin.area.command.CreateAreaCommand
 import me.mocha.spongeplugin.area.service.AreaService
-import me.mocha.spongeplugin.area.util.AreaInfo
-import me.mocha.spongeplugin.area.util.AreaSerializer
+import me.mocha.spongeplugin.area.model.entity.Area
+import me.mocha.spongeplugin.area.model.serializer.AreaSerializer
 import ninja.leaping.configurate.commented.CommentedConfigurationNode
 import ninja.leaping.configurate.loader.ConfigurationLoader
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializerCollection
@@ -51,7 +51,7 @@ class AreaSystem {
 
     @Listener
     fun onPreInit(event: GamePreInitializationEvent) {
-        TypeSerializerCollection.defaults().register(TypeToken.of(AreaInfo::class.java), AreaSerializer)
+        TypeSerializerCollection.defaults().register(TypeToken.of(Area::class.java), AreaSerializer)
     }
 
     @Listener
